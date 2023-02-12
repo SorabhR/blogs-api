@@ -41,9 +41,16 @@ const addblog = async (req, res, next) => {
             username: req.user.username,
             content: req.body.content,
         };
-    const blogsDb = firestore.collection('blogs'); 
-    const response = await blogsDb.doc(id).set(content);
-    res.send('Blog uploaded successfuly');
+        const userBlog = firestore.collection("blogs").doc(id);
+        const response = await userBlog.get();
+        if (response.exists)
+            res.send("Blog with that id already exists");
+        else{
+            const blogsDb = firestore.collection('blogs'); 
+            const response = await blogsDb.doc(id).set(content);
+            res.send('Blog uploaded successfuly');
+        }    
+    
     } catch (error) {
         res.status(400).send(error.message);
     }
